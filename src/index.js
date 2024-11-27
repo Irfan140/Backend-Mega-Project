@@ -2,7 +2,7 @@
 import dotenv from "dotenv" // improve varient
 
 import connectDB from "./db/index.js";
-
+import {app} from "./app.js"
 
 dotenv.config({
     path: './.env'
@@ -11,8 +11,20 @@ dotenv.config({
 
 
 connectDB()
+.then(() => {
+    app.on("error", (error)=> {
+        console.log("ERRR: ",error)
+        throw error
+       })
+    app.listen(process.env.PORT || 8000, () => {
+        console.log(`⚙️ Server is running at port : ${process.env.PORT}`);
+    })
+})
+.catch((err) => {
+    console.log("MONGO db connection failed !!! ", err);
+})
 
-//  use nom run dev command to run the file
+
 
 //? Different Approach
 
@@ -56,4 +68,5 @@ Some other points
 2. As early as possible in our application -> import and configure dotenv
 3. must do  when we use import statement for dotenv
 4. when we make changes in .env file we have to manually restart the server 
+5. use npm run dev command to run the file
 */
