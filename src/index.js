@@ -1,6 +1,8 @@
 // require('dotenv').config({path: './env'}) 
-import dotenv from "dotenv"
+import dotenv from "dotenv" // improve varient
+
 import connectDB from "./db/index.js";
+
 
 dotenv.config({
     path: './.env'
@@ -10,11 +12,16 @@ dotenv.config({
 
 connectDB()
 
+//  use nom run dev command to run the file
+
 //? Different Approach
 
 /* 
 
 import express from "express"
+import mongoose from "mongoose";
+import { DB_NAME } from "../constants.js";
+
 const app = express()
 
 
@@ -47,4 +54,6 @@ Some important points from Hitesh Sir regarding DB
 Some other points
 1. For IIFE always use ; before using
 2. As early as possible in our application -> import and configure dotenv
+3. must do  when we use import statement for dotenv
+4. when we make changes in .env file we have to manually restart the server 
 */
