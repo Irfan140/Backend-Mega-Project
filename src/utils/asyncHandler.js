@@ -15,7 +15,7 @@ const asyncHandler = () => {}
 const asyncHandler = (func) => () => {}
 const asyncHandler = (func) => async () => {}
 
-
+4. asyncHandler function, which is a utility function designed to handle asynchronous operations in an Express.js application. It simplifies error handling for route handlers by automatically catching and passing errors to the next middleware or error handler.
 
 */
 
