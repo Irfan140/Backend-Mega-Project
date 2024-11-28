@@ -8,3 +8,9 @@ class ApiResponse {
 }
 
 export { ApiResponse }
+
+
+/*
+1. The ApiResponse class is a utility designed to standardize and simplify the structure of API responses in a Node.js application.
+
+*/
