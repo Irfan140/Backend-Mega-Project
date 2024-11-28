@@ -20,3 +20,11 @@ app.use(cookieParser())
 
 
 export  { app }
+
+
+/*
+
+1. we do app.use() in case of a middleware
+2. 
+
+*/
