@@ -19,6 +19,15 @@ app.use(express.static("public"))
 app.use(cookieParser())
 
 
+// routes import
+import userRouter from './routes/user.routes.js'
+
+
+
+// routes declaration
+app.use("/api/v1/users", userRouter) // whenever we go to /api/v1/users (industry practice -> v1 is vrsion number) -> control will be be moved to userRouter middleware
+
+
 export  { app }
 
 
