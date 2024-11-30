@@ -8,7 +8,10 @@ const router = Router()
 // means when we get a request at register route then registerUser get executed
 router.route("/register").post(
     // middleware 
-    // when we make the frontend then its field name must be same as below mentioned names
+    /* 
+    The frontend must send form-data with the exact field names (avatar and coverImage) defined in the middleware.
+    If the names in the frontend don't match, the server won't recognize the files, and the middleware will fail to process them.
+    */
     upload.fields([
         {
             name: "avatar", 
