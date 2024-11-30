@@ -25,7 +25,8 @@ import userRouter from './routes/user.routes.js'
 
 
 // routes declaration
-app.use("/api/v1/users", userRouter) // whenever we go to /api/v1/users (industry practice -> v1 is vrsion number) -> control will be be moved to userRouter middleware
+app.use("/api/v1/users", userRouter) 
+// whenever we go to /api/v1/users (industry practice -> v1 is vrsion number) -> control will be be moved to userRouter middleware
 
 
 export  { app }
@@ -33,7 +34,7 @@ export  { app }
 
 /*
 
-1. we do app.use() in case of a middleware
+1. we use app.use() in case of a middleware
 2. 
 
 */
