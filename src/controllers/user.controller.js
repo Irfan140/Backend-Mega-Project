@@ -5,6 +5,31 @@ import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 
 
+// Since generating access and refresh token is used many times we made a method for it
+const generateAccessAndRefereshTokens = async (userId) => {
+    try {
+        // finding user by its id (a unique id is automatically generated my mongodb for ecah user)
+        const user = await User.findById(userId)
+        // generating acces token
+        const accessToken = user.generateAccessToken()
+        // generating refresh token 
+        const refreshToken = user.generateRefreshToken()
+
+        // adding refreshToken to our user object
+        user.refreshToken = refreshToken
+        // saving the refreshToken in the user
+        await user.save({ validateBeforeSave: false }) // validateBeforeSave: false means -> donot do any validation , just store it
+
+        return {accessToken, refreshToken}
+
+
+    } catch (error) {
+        throw new ApiError(500, "Something went wrong while generating referesh and access token")
+    }
+}
+
+
+// User registration
 const registerUser = asyncHandler( async (req,res) => {
     /*
     Steps for making registering a user
@@ -92,4 +117,73 @@ const registerUser = asyncHandler( async (req,res) => {
     )
 })
 
-export {registerUser}
+
+// User Login
+const loginUser = asyncHandler(async (req, res) => {
+    /*
+    --> from req body take data
+    --> validate the user using username or email (We will Make the code such that , we an validate using either email or username)
+    --> find the user
+    --> password check
+    --> generate access and referesh token
+    --> send these tokens i  the form of  cookies (secure cookies)
+    */
+
+    // Taking data from user
+    const {email, username, passsword} = req.body
+
+    // We need atleast one -> either email or username for validation
+    if(!username || !email) {
+        throw new ApiError(400, "username or password is required")
+    }
+
+    // Finding user 
+    // here depending upon the type of validation , means validate using either email or fullname -> so we wrote both email and fullname in the array
+    const user = await User.findOne({
+        $or: [{username}, {email}]
+    })
+
+    if (!user) {
+        throw new ApiError(404, "User does not exist")
+    }
+
+    // password Checking
+    const isPasswordValid = await user.isPasswordCorrect(password)
+
+   if (!isPasswordValid) {
+        throw new ApiError(401, "Invalid user credentials")
+    }
+    
+    // Taking the generated accessToken and refreshToken from the user
+    const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(user._id)
+
+    //  Removing the password and refreshToken field before sending the response
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+
+    // options for the cookines 
+    // by default anyone can modify our cookie in the frontend
+    // Using httpOnly: true and secure: true -> our cookie can only be modified from the server
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    // sending what we need to send in the form of response
+    return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+        new ApiResponse(
+            200, 
+            {
+                user: loggedInUser, accessToken, refreshToken
+            },
+            "User logged In Successfully"
+        )
+    )
+})
+
+export {
+    registerUser,
+}
