@@ -25,6 +25,7 @@ import userRouter from './routes/user.routes.js'
 
 
 // routes declaration
+// the userRouter is a router middleware that handles routes under the base path /api/v1/users
 app.use("/api/v1/users", userRouter) 
 // whenever we go to /api/v1/users (industry practice -> v1 is vrsion number) -> control will be be moved to userRouter middleware
 
