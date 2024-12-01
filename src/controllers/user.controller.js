@@ -39,6 +39,7 @@ const registerUser = asyncHandler( async (req,res) => {
         */
     }
 
+    // The $or operator in MongoDB is used to specify multiple conditions in a query where at least one condition must be true for the document to be considered a match. It’s a logical operator that combines multiple query expressions and performs a logical OR operation.
     const existedUser = await User.findOne({
         $or: [{username},{email}]
     })
