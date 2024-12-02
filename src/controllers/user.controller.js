@@ -5,10 +5,10 @@ import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 
 
-// Since generating access and refresh token is used many times we made a method for it
+// Since generating access and refresh token is used many times so we made a method for it
 const generateAccessAndRefereshTokens = async (userId) => {
     try {
-        // finding user by its id (a unique id is automatically generated my mongodb for ecah user)
+        // finding user by its id (an unique id is automatically generated my mongodb for ecah user)
         const user = await User.findById(userId)
         // generating acces token
         const accessToken = user.generateAccessToken()
@@ -130,6 +130,7 @@ const loginUser = asyncHandler(async (req, res) => {
     */
 
     // Taking data from user
+    // It extracts specific properties (email, username, and password) from the object req.body and assigns their values to the corresponding variables.
     const {email, username, passsword} = req.body
 
     // We need atleast one -> either email or username for validation
@@ -169,8 +170,11 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 
     // sending what we need to send in the form of response
+    // It includes setting HTTP status codes, cookies, and sending a JSON response.
     return res
     .status(200)
+    //  Setting Cookies
+    // Purpose: To send cookies to the client, which can be stored in the browser for maintaining sessions or authentication.
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
     .json(
@@ -184,6 +188,42 @@ const loginUser = asyncHandler(async (req, res) => {
     )
 })
 
+// User Logout
+const logOutUser = asyncHandler( async (req, res) => {
+    // We donot have the access of user , so we canot get its id and details for logging out, so we will make our own middleware for the work (authentication work)
+
+    // After doing the work of middleware we now have the access of user in req
+
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $unset: {
+                refreshToken: 1 // this removes the field from document
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    // options for cookies
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+    .status(200)
+    // Clearing the cookies
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User logged Out"))
+
+}) 
+
+
 export {
     registerUser,
+    loginUser,
+    logOutUser
 }
