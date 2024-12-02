@@ -24,7 +24,7 @@ const generateAccessAndRefereshTokens = async (userId) => {
 
 
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while generating referesh and access token")
+        throw new ApiError(500, "Something went wrong while generating refresh and access token")
     }
 }
 
@@ -131,7 +131,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     // Taking data from user
     // It extracts specific properties (email, username, and password) from the object req.body and assigns their values to the corresponding variables.
-    const {email, username, passsword} = req.body
+    const {email, username, password} = req.body
 
     // We need atleast one -> either email or username for validation
     if(!(username || email)) {
