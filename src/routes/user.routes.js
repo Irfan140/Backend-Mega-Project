@@ -5,6 +5,7 @@ import {upload} from "../middlewares/multer.middleware.js"
 
 const router = Router()
 
+// register route
 // means when we get a request at register route then registerUser get executed
 router.route("/register").post(
     // middleware 
@@ -25,6 +26,14 @@ router.route("/register").post(
     registerUser
 )
 
+// Login route
+router.route("/login").post(loggedInUser)
+
+
+// Secured routes
+
+// Logout route
+router.route("/logout").post(verifyJWT, logoutUser)
 
 export default router
 
