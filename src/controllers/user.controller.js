@@ -281,6 +281,80 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 
+// updaing password
+const changeCurrentPassword = asyncHandler(async(req, res) => {
+
+    // Taking the old password and the new password ( that the user wants to set) from the user
+    const {oldPassword, newPassword} = req.body
+
+    // Finding the user
+    const user = await User.findById(req.user?._id)
+
+    // Checking the old password  -> ifit is correct or not
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+
+    if (!isPasswordCorrect) {
+        throw new ApiError(400, "Invalid old password")
+    }
+
+    // Setting the old password  with new password
+    user.password = newPassword
+    
+    // Saving the new password
+    await user.save({validateBeforeSave: false})
+
+    // Sending the response
+    return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password changed successfully"))
+})
+
+
+// Getting current user details
+const getCurrentUser = asyncHandler(async(req, res) => {
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200,
+        req.user,
+        "User fetched successfully"
+    ))
+})
+
+
+// Updating the account details
+const updateAccountDetails = asyncHandler(async(req, res) => {
+
+    // Suppose we want to update the fullName and email
+    const {fullName, email} = req.body
+
+    if (!fullName || !email) {
+        throw new ApiError(400, "All fields are required")
+    }
+
+    // Finding abd updating the user
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                fullName,
+                email
+            }
+        },
+        {new: true} // returns the information after the update
+        
+    ).select("-password") // removing the password field
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Account details updated successfully"))
+});
+
+
+
+
+
+
 export {
     registerUser,
     loginUser,
