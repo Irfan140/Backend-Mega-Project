@@ -1,49 +1,65 @@
-import { Router } from "express" // Imports the Router class from the express library
+import { Router } from "express"; // Imports the Router class from the express library
 import {
-    registerUser ,
-    refreshAccessToken
-} from "../controllers/user.controller.js"
-import {upload} from "../middlewares/multer.middleware.js"
-import {loginUser, logOutUser} from "../controllers/user.controller.js"
+  loginUser,
+  logOutUser,
+  registerUser,
+  refreshAccessToken,
+  changeCurrentPassword,
+  getCurrentUser,
+  updateUserAvatar,
+  updateUserCoverImage,
+  getUserChannelProfile,
+  getWatchHistory,
+  updateAccountDetails,
+} from "../controllers/user.controller.js";
+import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
-
-const router = Router()
+const router = Router();
 
 // register route
 // means when we get a request at register route then registerUser get executed
 router.route("/register").post(
-    // middleware 
-    /* 
+  // middleware
+  /* 
     The frontend must send form-data with the exact field names (avatar and coverImage) defined in the middleware.
     If the names in the frontend don't match, the server won't recognize the files, and the middleware will fail to process them.
     */
-    upload.fields([
-        {
-            name: "avatar", 
-            maxCount: 1
-        },
-        {
-            name: "coverImage",
-            maxCount: 1
-        }
-    ]),
-    registerUser
-)
+  upload.fields([
+    {
+      name: "avatar",
+      maxCount: 1,
+    },
+    {
+      name: "coverImage",
+      maxCount: 1,
+    },
+  ]),
+  registerUser
+);
 
 // Login route
-router.route("/login").post(loginUser)
-
+router.route("/login").post(loginUser);
 
 // Secured routes
 
-// Logout route
-router.route("/logout").post(verifyJWT, logOutUser)
-// Refresh token route
-router.route("/refresh-token").post(refreshAccessToken)
+router.route("/logout").post(verifyJWT, logOutUser);
+router.route("/refresh-token").post(refreshAccessToken);
+router.route("/change-password").post(verifyJWT, changeCurrentPassword);
+router.route("/current-user").get(verifyJWT, getCurrentUser);
+router.route("/update-account").patch(verifyJWT, updateAccountDetails);
 
-export default router
+router
+  .route("/avatar")
+  .patch(verifyJWT, upload.single("avatar"), updateUserAvatar);
+router
+  .route("/cover-image")
+  .patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage);
 
+router.route("/c/:username").get(verifyJWT, getUserChannelProfile);
+router.route("/history").get(verifyJWT, getWatchHistory);
+
+export default router;
 
 /*
 -> Purpose of Router 
